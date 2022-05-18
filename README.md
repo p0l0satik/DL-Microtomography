@@ -5,3 +5,4 @@ In 2021 convolutional neural networks were effectively used to solve the inverse
 Successful development of microtomography in reflected electrons could be important for both academy and industry. The relatively low starting energy of the probe's electrons will make it possible to examine biological and non-biological micro-volumes without any risk of damaging them.
 
 # How to generate data
+python3 test_gen.py
