@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from pyrfc3339 import generate
 
 import pyvista as pv
 
@@ -30,6 +31,33 @@ class structure_3l:
         self.Nx = self.xx.shape[0]
         self.Ny = self.xx.shape[1]
 
+    def generate_layer(var, d_max, xx, Nx, Ny, seed):
+        #layer2 - Au
+        d = np.zeros_like(xx)
+
+        d_max = 15
+
+        # generate noise
+        # noise = PerlinNoise(octaves=2, seed=seed_pair[0]) # provide seed pair for layer2, layer3
+        noise = PerlinNoise(octaves=2, seed=seed) # provide seed pair for layer2, layer3
+
+        xpix, ypix = Nx, Ny
+        pic = [[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)]
+        pic = np.array(pic)
+
+        # quantize noise
+        d = pic 
+        d[d<0] = 0
+        # d2 = 20*d2  #10
+        # d2 = d2.astype(np.int)*5 #10 #*5
+        d = var[0]*d  #10
+        d = d.astype(np.int)*var[1] #10 #*5
+
+        d = d*d_max/(np.max(d)-np.min(d))
+        d = d.astype(np.int)
+        print("\nd2_thikness: ", (np.min(d), np.max(d)), '\n', np.unique(d) )
+        return d
+
     @classmethod
     def create_test_structure(cls, Nx, Ny, seed_pair):
 
@@ -48,50 +76,9 @@ class structure_3l:
         # base (layer1)
         d1 = np.ones_like(xx)
         
-
-        #layer2 - Au
-        d2 = np.zeros_like(xx)
-
-        d2_max = 15
-
-        # generate noise
-        noise = PerlinNoise(octaves=2, seed=seed_pair[0]) # provide seed pair for layer2, layer3
-        xpix, ypix = Nx, Ny
-        pic = [[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)]
-        pic = np.array(pic)
-
-        # quantize noise
-        d2 = pic 
-        d2[d2<0] = 0
-        d2 = 20*d2  #10
-        d2 = d2.astype(np.int)*5 #10 #*5
-
-        d2 = d2*d2_max/(np.max(d2)-np.min(d2))
-        d2 = d2.astype(np.int)
-        print("\nd2_thikness: ", (np.min(d2), np.max(d2)), '\n', np.unique(d2) )
-
-
-
+        d2 = structure_3l.generate_layer((20, 5), 15, xx, Nx, Ny, seed_pair[0])
         # layer3 - Al
-        d3 = np.zeros_like(xx)
-
-        d3_max = 150
-
-        # generate noise
-        noise = PerlinNoise(octaves=2, seed=seed_pair[1]) # octave is scale of variability
-        xpix, ypix = Nx, Ny
-        pic = [[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)]
-        pic = np.array(pic)
-
-        # quantize noise
-        d3 = pic
-        d3[d3<0] = 0
-        d3 = 7*d3 #20* 10* 5*  thinkness variability
-        d3 = d3.astype(np.int)*10
-
-        d3 = d3*d3_max/(np.max(d3)-np.min(d3))
-        d3 = d3.astype(np.int)
-        print("\nd3_thikness: ", (np.min(d3), np.max(d3)), '\n', np.unique(d3))
+        d3 = structure_3l.generate_layer((7, 10), 150, xx, Nx, Ny, seed_pair[1])
 
         return cls(xx, yy, (d1, d2, d3), rho, Z)
 
@@ -215,6 +202,7 @@ class structure_3l:
 
     def calc_signal(self, E0, noise_level = 0):
         image = np.zeros((self.Nx, self.Ny, E0.shape[0]))
+        print("img shape", image.shape)
         coords = np.array([self.xx, self.yy])
         layers_num = np.zeros((self.Nx, self.Ny))
         for i in range(self.Nx-1):
