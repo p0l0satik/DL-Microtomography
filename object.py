@@ -35,8 +35,6 @@ class structure_3l:
         #layer2 - Au
         d = np.zeros_like(xx)
 
-        d_max = 15
-
         # generate noise
         # noise = PerlinNoise(octaves=2, seed=seed_pair[0]) # provide seed pair for layer2, layer3
         noise = PerlinNoise(octaves=2, seed=seed) # provide seed pair for layer2, layer3
