@@ -3,7 +3,7 @@ from torch.utils.data import Dataset, DataLoader
 import os
 import numpy as np
 from torchvision import transforms as T
-from random import random
+from random import random, choice
 
 class TomographySet(Dataset):
 
@@ -28,9 +28,10 @@ class TomographySet(Dataset):
       label = T.functional.vflip(label)
   
     # Rotation
-    rand_deg = T.RandomRotation.get_params(degrees=[-30, 30])
-    image = T.functional.rotate(image, angle = rand_deg)
-    label = T.functional.rotate(label, angle = rand_deg)
+    if random()>0.5:
+      rand_deg = choice([90, -90])
+      image = T.functional.rotate(image, angle = rand_deg)
+      label = T.functional.rotate(label, angle = rand_deg)
     
     return image, label
 
