@@ -10,7 +10,7 @@ class TomographySet(Dataset):
   def __init__(self, dir, mode):
     self.mode = mode
     self.dir = dir
-    self.scans = os.listdir(self.dir + 'scans')
+    self.scans = [x for x in os.listdir(self.dir + 'scans') if x[-3:]=='npy']
     self.strs = os.listdir(self.dir + 'structures')
     self.len = len(self.scans)
 
