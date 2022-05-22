@@ -47,7 +47,7 @@ class TomographySet(Dataset):
       image = torch.from_numpy(np.load(self.dir + 'scans/' + self.scans[idx]))
       image = torch.permute(image, (2, 0, 1))
       label = torch.from_numpy(np.load(self.dir + 'structures/' + self.strs[idx]))
-      image, label = transform(image=image, label=label)
+      image, label = self.transform(image=image, label=label)
       assert image.shape == torch.Size([31, 128, 128]) and label.shape == torch.Size([2, 128, 128])
       return image.float(), label.float()
 
