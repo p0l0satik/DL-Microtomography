@@ -45,19 +45,19 @@ class TomographySet(Dataset):
 
   def __getitem__(self, idx):
     if self.mode == 'train':
-      image = torch.from_numpy(np.load(self.dir + 'scans/' + self.scans[idx]))
+      image = torch.from_numpy(np.load(self.dir + 'scans/' + self.scans[idx])).float()
       image = torch.permute(image, (2, 0, 1))
-      label = torch.from_numpy(np.load(self.dir + 'structures/' + self.strs[idx]))
+      label = torch.from_numpy(np.load(self.dir + 'structures/' + self.strs[idx])).float()
       image, label = self.transform(image=image, label=label)
       assert image.shape == torch.Size([31, 128, 128]) and label.shape == torch.Size([2, 128, 128])
-      return image.float(), label.float()
+      return image, label
 
     elif self.mode == 'test':
-      image = torch.from_numpy(np.load(self.dir + 'scans/' + self.scans[idx+self.border]))
+      image = torch.from_numpy(np.load(self.dir + 'scans/' + self.scans[idx+self.border])).float()
       image = torch.permute(image, (2, 0, 1))
-      label = torch.from_numpy(np.load(self.dir + 'structures/' + self.strs[idx+self.border]))
+      label = torch.from_numpy(np.load(self.dir + 'structures/' + self.strs[idx+self.border])).float()
       assert image.shape == torch.Size([31, 128, 128]) and label.shape == torch.Size([2, 128, 128])
-      return image.float(), label.float()
+      return image, label
     
 # For .npz data    
 class CustomData(Dataset):
