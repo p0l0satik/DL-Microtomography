@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from pyrfc3339 import generate
 
 import pyvista as pv
 
@@ -31,31 +30,6 @@ class structure_3l:
         self.Nx = self.xx.shape[0]
         self.Ny = self.xx.shape[1]
 
-    def generate_layer(var, d_max, xx, Nx, Ny, seed):
-        #layer2 - Au
-        d = np.zeros_like(xx)
-
-        # generate noise
-        # noise = PerlinNoise(octaves=2, seed=seed_pair[0]) # provide seed pair for layer2, layer3
-        noise = PerlinNoise(octaves=2, seed=seed) # provide seed pair for layer2, layer3
-
-        xpix, ypix = Nx, Ny
-        pic = [[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)]
-        pic = np.array(pic)
-
-        # quantize noise
-        d = pic 
-        d[d<0] = 0
-        # d2 = 20*d2  #10
-        # d2 = d2.astype(np.int)*5 #10 #*5
-        d = var[0]*d  #10
-        d = d.astype(np.int)*var[1] #10 #*5
-
-        d = d*d_max/(np.max(d)-np.min(d))
-        d = d.astype(np.int)
-        print("\nd2_thikness: ", (np.min(d), np.max(d)), '\n', np.unique(d) )
-        return d
-
     @classmethod
     def create_test_structure(cls, Nx, Ny, seed_pair):
 
@@ -72,21 +46,86 @@ class structure_3l:
         Z_id = (1, 2, 3)        # material_id
 
         # base (layer1)
-        d1 = np.ones_like(xx)
+        d1 = np.ones_like(xx).astype(np.uint8)
         
-        d2 = structure_3l.generate_layer((20, 5), 15, xx, Nx, Ny, seed_pair[0])
+
+        #layer2 - Au
+        d2 = np.zeros_like(xx)
+
+        d2_max = 15
+
+        # generate noise
+        noise = PerlinNoise(octaves=2, seed=seed_pair[0]) # provide seed pair for layer2, layer3
+        xpix, ypix = Nx, Ny
+        pic = [[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)]
+        pic = np.array(pic)
+
+        # quantize noise
+        d2 = pic 
+        d2[d2<0] = 0
+        d2 = 20*d2  #10
+        d2 = d2.astype(np.int)*5 #10 #*5
+
+        d2 = d2*d2_max/(np.max(d2)-np.min(d2))
+        d2 = d2.astype(np.uint8)
+        u, c = np.unique(d2, return_counts=True)
+        #print("\nd2_thikness: ", (np.min(d2), np.max(d2)), 
+        #      '\n', u,
+        #      '\n', c)
+
+
+
         # layer3 - Al
-        d3 = structure_3l.generate_layer((7, 10), 150, xx, Nx, Ny, seed_pair[1])
+        d3 = np.zeros_like(xx)
+
+        d3_max = 150 #150
+
+        # generate noise
+        noise = PerlinNoise(octaves=2, seed=seed_pair[1]) # octave == scale of perlin variability
+        xpix, ypix = Nx, Ny
+        pic = [[noise([i/xpix, j/ypix]) for j in range(xpix)] for i in range(ypix)]
+        pic = np.array(pic)
+
+        # quantize noise
+        d3 = pic
+        d3[d3<0] = 0
+        d3 = 10*d3 #20* 10* 5*  thinkness variability
+        d3 = d3.astype(np.int)*10
+
+        d3 = d3*d3_max/(np.max(d3)-np.min(d3))
+        d3 = d3.astype(np.uint8)
+        u, c = np.unique(d3, return_counts=True)
+        #print("\nd3_thikness: ", (np.min(d3), np.max(d3)), 
+        #      '\n', u,
+        #      '\n', c)
 
         return cls(xx, yy, (d1, d2, d3), rho, Z)
+
+
+    def read_d(self, d2, d3):
+
+        d = np.array(self.d)
+
+        d[1,:,:] = d2 
+        d[1,:,:] = d3
+
+        d = [d[di, :, :] for di in range(d.shape[0])]
+        d = (*d, )
+
+        self.d = d
+
+        return self
+
 
 
     def plot_3d(self):
         pv.set_plot_theme('document')
         grid1 = pv.StructuredGrid(self.xx, self.yy, self.d[0])
         grid1.point_data['scalars'] = np.average(self.Z_id [0])
+
         grid2 = pv.StructuredGrid(self.xx, self.yy, self.d[0]+self.d[1])
         grid2.point_data['scalars'] = np.average(self.Z_id [1])
+
         grid3 = pv.StructuredGrid(self.xx, self.yy, self.d[0]+self.d[1]+self.d[2])
         grid3.point_data['scalars'] = np.average(self.Z_id[2])
 
@@ -200,7 +239,6 @@ class structure_3l:
 
     def calc_signal(self, E0, noise_level = 0):
         image = np.zeros((self.Nx, self.Ny, E0.shape[0]))
-        print("img shape", image.shape)
         coords = np.array([self.xx, self.yy])
         layers_num = np.zeros((self.Nx, self.Ny))
         for i in range(self.Nx-1):
