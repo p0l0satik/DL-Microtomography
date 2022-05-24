@@ -41,7 +41,7 @@ class CustomData(Dataset):
       structure = T.functional.rotate(structure, angle = rand_deg)
       structure_3d = T.functional.rotate(structure_3d, angle = rand_deg)
     
-    return image, label
+    return scan, structure, structure_3d
 
   def __len__(self):
     self.border = int(self.len * 0.8)
@@ -56,7 +56,7 @@ class CustomData(Dataset):
       image = torch.permute(image, (2, 0, 1)).float()
       label = torch.from_numpy(np.load(self.dir + 'structures/' + self.strs[idx])['arr_0']).float()
       structure_3d = torch.from_numpy(np.load(self.dir + '3d_structures/' + self.struc_3d[idx])['arr_0'].T).float()
-      image, label = self.transform(image=image, label=label, structure_3d=structure_3d)
+      image, label, structure_3d = self.transform(scan=image, structure=label, structure_3d=structure_3d)
       return image, label, structure_3d
 
     elif self.mode == 'test':
