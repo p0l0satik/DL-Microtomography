@@ -54,17 +54,17 @@ class CustomData(Dataset):
     if self.mode == 'train':
       image = torch.from_numpy(np.load(self.dir + 'scans/' + self.scans[idx])['arr_0'])
       image = torch.permute(image, (2, 0, 1)).float()
-      label = torch.from_numpy(np.load(self.dir + 'structures/' + self.strs[idx])['arr_0']).float()
-      structure_3d = torch.from_numpy(np.load(self.dir + '3d_structures/' + self.struc_3d[idx])['arr_0'].T).float()
-      image, label, structure_3d = self.transform(scan=image, structure=label, structure_3d=structure_3d)
+      structure = torch.from_numpy(np.array([a.T for a in np.load(self.dir + 'structures/' + self.strs[idx])['arr_0']])).float()
+      structure_3d = torch.from_numpy(np.array([a.T for a in np.load(self.dir + '3d_structures/' + self.struc_3d[idx])['arr_0']])).float()
+      image, label, structure_3d = self.transform(scan=image, structure=structure, structure_3d=structure_3d)
       return image, label, structure_3d
 
     elif self.mode == 'test':
       image = torch.from_numpy(np.load(self.dir + 'scans/' + self.scans[idx+self.border])['arr_0'])
       image = torch.permute(image, (2, 0, 1)).float()
-      label = torch.from_numpy(np.load(self.dir + 'structures/' + self.strs[idx+self.border])['arr_0'].T).float()
-      structure_3d = torch.from_numpy(np.load(self.dir + '3d_structures/' + self.struc_3d[idx+self.border])['arr_0'].T).float()
-      return image, label, structure_3d
-
+      structure = torch.from_numpy(np.array([a.T for a in np.load(self.dir + 'structures/' + self.strs[idx+self.border])['arr_0']])).float()
+      structure_3d = torch.from_numpy(np.array([a.T for a in np.load(self.dir + '3d_structures/' + self.struc_3d[idx+self.border])['arr_0']])).float()
+      return image, structure, structure_3d
+    
 # Initialization (here PATH_TO_DATA is path to directory where scans and structures are located, e.g. '/content/drive/MyDrive/dataset0/', 'MODE' = 'test' or 'train'):
 loader = DataLoader(TomographySet('PATH_TO_DATA', mode='MODE'), num_workers=2, batch_size=16, shuffle=True)
