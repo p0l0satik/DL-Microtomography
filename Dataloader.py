@@ -48,7 +48,7 @@ class TomographySet(Dataset):
       image = torch.from_numpy(np.load(self.dir + 'scans/' + self.scans[idx]))
       image = torch.permute(image, (2, 0, 1))
       label = torch.from_numpy(np.load(self.dir + 'structures/' + self.strs[idx]))
-      image, label = self.transform(image=image, label=label)
+      # image, label = self.transform(image=image, label=label)
       assert image.shape == torch.Size([31, 128, 128]) and label.shape == torch.Size([2, 128, 128])
       return image.float(), label.float()
 
@@ -114,5 +114,6 @@ class CustomData(Dataset):
       assert image.shape == torch.Size([31, 128, 128]) and label.shape == torch.Size([2, 128, 128])
       return image, label
 
+if __name__ == "__main__":
 # Initialization (here PATH_TO_DATA is path to directory where scans and structures are located, e.g. '/content/drive/MyDrive/dataset0/', 'MODE' = 'test' or 'train'):
-loader = DataLoader(TomographySet('PATH_TO_DATA', mode='MODE'), num_workers=2, batch_size=16, shuffle=True)
+  loader = DataLoader(TomographySet('PATH_TO_DATA', mode='MODE'), num_workers=2, batch_size=16, shuffle=True)

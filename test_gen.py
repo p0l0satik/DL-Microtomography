@@ -11,9 +11,9 @@ os.makedirs(dataset_name +"/structures", exist_ok=True)
 os.makedirs(dataset_name +"/scans", exist_ok=True)
 
 
-layer2_seeds = np.arange(1,3) #(1,1000) --> produce 100*100 sample structures
+layer2_seeds = np.arange(1,30) #(1,1000) --> produce 100*100 sample structures
 #print(layer2_seeds)
-layer3_seeds = np.arange(1,3) #(1,1000)
+layer3_seeds = np.arange(1,30) #(1,1000)
 #print(layer2_seeds)
 
 seed_pairs = []
@@ -21,7 +21,7 @@ for l2 in layer2_seeds:
     for l3 in layer3_seeds:
         seed_pairs.append( (l2, l3) )
 
-vis = True
+vis = False
 
 for i, seed_pair in enumerate(seed_pairs):
     print(i)
