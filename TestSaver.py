@@ -24,10 +24,10 @@ def pic_saver(pred, gt, name):
  ! mkdir val_pics
     
  for pic, struct in zip(val_pics, val_strs):
-    scan = np.load('/trinity/home/a.razorenova/lab/gpfs/a.razorenova/Microtomo/compare_data/test4k/scans/' + pic)
+    scan = np.load('/trinity/home/a.razorenova/lab/gpfs/a.razorenova/Microtomo/compare_data/test4k/scans/' + pic) # ПОМЕНЯТЬ ТЕКУЩУЮ ДИРЕКТОРИЮ
     scan = torch.unsqueeze(torch.permute(torch.from_numpy(scan), (2, 0, 1)), dim=0).float()
     pred = torch.squeeze(unet(scan.cuda()))
-    gt = torch.from_numpy(np.load('/trinity/home/a.razorenova/lab/gpfs/a.razorenova/Microtomo/compare_data/test4k/struct/' + struct))
+    gt = torch.from_numpy(np.load('/trinity/home/a.razorenova/lab/gpfs/a.razorenova/Microtomo/compare_data/test4k/struct/' + struct)) # ЗДЕСЬ ТОЖЕ
     pic_saver(pred, gt, pic[5:-4])
     np.save('val_pics/'+pic[5:-4]+'.npy', pred.detach().cpu())
     
