@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 # setting path
 sys.path.append('../../')
 from utils.generation.object import *
@@ -92,10 +93,10 @@ def viz_volume(volume, zz, add_base=True, viz_type="volume"):
 
 # example   ################################
 
-filepath = "compare_data/test4k/struct/"
+# filepath = "compare_data/test4k/struct/"
 filepath = "compare_data/test4k/rec3d_struct/half_3d_ep20/"
 #filepath = "compare_data/train10k/struct/"
-
+filepath = "../../3d_viz/3d_Unet/"
 file_list = sorted(os.listdir(filepath))
 
 id_list = sorted([file.split("_")[-1] for file in file_list])

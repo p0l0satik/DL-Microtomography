@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
 # setting path
 sys.path.append('../../')
 from utils.generation.object import *
