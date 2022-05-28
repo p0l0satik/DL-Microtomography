@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from object import *
+# setting path
+sys.path.append('../../')
+from utils.generation.object import *
 
 import pyvista as pv
 from pyvista import examples
