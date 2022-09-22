@@ -3,6 +3,3 @@ Scanning electron microscopy (SEM) is a powerful noninvasive method of examinati
 The problem of microtomography in reflected electrons is a classical ill-posed problem of mathematical physics. Standard methods of reflected electron tomography usually only aim at separating superimposed images of layers rather than investigating their characteristics or composition. The current project involves reconstructing the internal structure of a layered object (cladding) in terms of layer thickness, material density.   
 In 2021 convolutional neural networks were effectively used to solve the inverse problem of fluorescence microtomography. CNN networks (UNet, 3-d UNer) presumably can be used as effective solver of reflected electron microtomography inverse problem. The project is aimed to test and compare different CNN-architectures on volumetric layered structure. DL approach may be at use as a fast and more stable method compared to numerical inverse solvers.
 Successful development of microtomography in reflected electrons could be important for both academy and industry. The relatively low starting energy of the probe's electrons will make it possible to examine biological and non-biological micro-volumes without any risk of damaging them.
-
-# How to generate data
-python3 test_gen.py
